@@ -8,12 +8,13 @@ namespace ConsoleApp1
     {
         public static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Console.WriteLine("Network Manager tester");
 
+            // Note that I'm running this in a docker container, which is why the custom bus is specified
             var dbusSystemConnection = new Connection("unix:path=/host/run/dbus/system_bus_socket");
             var dbusNetworkManager = dbusSystemConnection.CreateProxy<INetworkManager>("org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager");
             //var dbusNetworkManagerI = dbusSystemConnection.CreateProxy<NetworkManager.DBus.INetworkManager>("org.freedesktop.NetworkManager.Settings.Connection", "/org/freedesktop/NetworkManager");
-            var dbusNetworkManagerS = dbusSystemConnection.CreateProxy<NetworkManager.DBus.ISettings>("org.freedesktop.NetworkManager.Settings", "/org/freedesktop/NetworkManager/Settings");
+            //var dbusNetworkManagerS = dbusSystemConnection.CreateProxy<NetworkManager.DBus.ISettings>("org.freedesktop.NetworkManager.Settings", "/org/freedesktop/NetworkManager/Settings");
 
             // Connect
             await dbusSystemConnection.ConnectAsync();
@@ -28,25 +29,9 @@ namespace ConsoleApp1
 
                     Console.WriteLine($"Interface: {interfaceName}");
 
-                    if (interfaceName != "eth0")
-                        continue;
-
-                    //await device.WatchStateChangedAsync(
-                    //    change => Console.WriteLine($"{interfaceName}: {change.oldState} -> {change.newState}")
-                    //);
-
-                    //var ipv4 = await device.GetIp4ConfigAsync();
-                    //var addresses = await ipv4.GetAddressesAsync();
-
-                    //foreach (var address in addresses)
-                    //{
-                    //    if (address.Length >= 3)
-                    //    {
-                    //        Console.WriteLine($"Address: {new IPAddress(address[0])}");
-                    //        Console.WriteLine($"Netmask: {address[1]}");
-                    //        Console.WriteLine($"Gateway: {new IPAddress(address[2])}");
-                    //    }
-                    //}
+                    // For testing
+                    //if (interfaceName != "eth0")
+                    //    continue;
 
                     var ipv4Config = await device.GetIp4ConfigAsync();
 
@@ -80,6 +65,7 @@ namespace ConsoleApp1
  
                     var proxy1 = dbusSystemConnection.CreateProxy<NetworkManager.DBus.IConnection>("org.freedesktop.NetworkManager", connection);
 
+                    // Throws exception here: Unhandled exception. Tmds.DBus.DBusException: org.freedesktop.DBus.Error.UnknownMethod: No such interface “org.freedesktop.NetworkManager.Settings.Connection” on object at path /org/freedesktop/NetworkManager/ActiveConnection/2
                     var settings = await proxy1.GetSettingsAsync();
                     foreach (var step1 in settings)
                     {
@@ -88,6 +74,7 @@ namespace ConsoleApp1
                     }
                 }
 
+                //var primaryConnection = await dbusNetworkManager.GetPrimaryConnectionAsync();
                 //var settings = await primaryConnection.GetSettingsAsync();
                 //ListProps(settings);
             }
