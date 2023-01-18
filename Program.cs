@@ -76,9 +76,9 @@ namespace ConsoleApp1
                 var activeConnections = await dbusNetworkManager.GetActiveConnectionsAsync();
                 foreach (var connection in activeConnections)
                 {
-                    Console.WriteLine($"Connection: {connection.ObjectPath}");
+                    Console.WriteLine($"Connection: {connection}");
  
-                    var proxy1 = dbusSystemConnection.CreateProxy<NetworkManager.DBus.IConnection>("org.freedesktop.NetworkManager", connection.ObjectPath);
+                    var proxy1 = dbusSystemConnection.CreateProxy<NetworkManager.DBus.IConnection>("org.freedesktop.NetworkManager", connection);
 
                     var settings = await proxy1.GetSettingsAsync();
                     foreach (var step1 in settings)
